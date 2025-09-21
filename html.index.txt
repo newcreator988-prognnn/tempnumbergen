@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced OTP Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f8ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 10px;
+  }
+  h1 { color: #333; margin-bottom: 20px; }
+  .container {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+  input, select, button {
+    margin: 8px 0;
+    padding: 10px;
+    width: 90%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+  button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover { background: #45a049; }
+  #otpResult {
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.8;
+  }
+  #timer {
+    margin-top: 10px;
+    color: #ff4500;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h1>Advanced OTP Generator</h1>
+<div class="container">
+  <label for="otpLength">OTP Length:</label>
+  <input type="number" id="otpLength" min="4" max="10" value="6">
+
+  <label for="otpType">OTP Type:</label>
+  <select id="otpType">
+    <option value="numeric">Numeric</option>
+    <option value="alphanumeric">Alphanumeric</option>
+  </select>
+
+  <label for="otpCount">Number of OTPs:</label>
+  <input type="number" id="otpCount" min="1" max="10" value="3">
+
+  <button onclick="generateOTPs()">Generate OTPs</button>
+
+  <div id="otpResult">---</div>
+  <button onclick="copyOTP()">Copy OTPs</button>
+  <div id="timer"></div>
+</div>
+
+<script>
+let countdownInterval;
+
+function generateOTPs() {
+  clearInterval(countdownInterval); // clear previous timer
+  let length = parseInt(document.getElementById('otpLength').value);
+  let type = document.getElementById('otpType').value;
+  let count = parseInt(document.getElementById('otpCount').value);
+  let characters = type === 'numeric' ? '0123456789' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let otps = [];
+
+  for (let i = 0; i < count; i++) {
+    let otp = '';
+    for (let j = 0; j < length; j++) {
+      otp += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    otps.push(otp);
+  }
+
+  document.getElementById('otpResult').textContent = otps.join('\n');
+  startTimer(30); // auto-refresh timer 30 seconds
+}
+
+function copyOTP() {
+  let otpText = document.getElementById('otpResult').textContent;
+  navigator.clipboard.writeText(otpText);
+  alert('OTPs copied to clipboard!');
+}
+
+function startTimer(seconds) {
+  let timerDiv = document.getElementById('timer');
+  let timeLeft = seconds;
+  timerDiv.textContent = `Next OTP in: ${timeLeft}s`;
+
+  countdownInterval = setInterval(() => {
+    timeLeft--;
+    timerDiv.textContent = `Next OTP in: ${timeLeft}s`;
+    if (timeLeft <= 0) {
+      clearInterval(countdownInterval);
+      generateOTPs(); // auto-generate new OTPs
+    }
+  }, 1000);
+}
+
+// Generate initial OTPs on page load
+window.onload = generateOTPs;
+</script>
+
+</body>
+</html>
